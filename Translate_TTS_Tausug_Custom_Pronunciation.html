@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English-Tausug Translator</title>
+    <link rel="stylesheet" href="Styles_TTS.css">
+</head>
+<body>
+    <div class="container">
+        <h1>English-Tausug Translator</h1>
+        <p>Enter text below, select the translation direction, and click "Translate" to convert using a word bank.</p>
+        
+        <select id="direction">
+            <option value="en-to-tausug">English to Tausug</option>
+            <option value="tausug-to-en">Tausug to English</option>
+        </select>
+        
+        <textarea id="inputText" placeholder="Type text here..."></textarea>
+        
+        <button onclick="translateText()">Translate</button>
+        
+        <div id="output"></div>
+        <button id="speakButton" onclick="speakTranslation()" disabled>🔊 Speak Translation</button>
+        <button id="stopButton" onclick="stopSpeaking()" disabled>⏹ Stop</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Tausug word banks
+        const wordBankEnToTausug = {
+            "hello": "assalamu alaykum",
+            "hi": "kumusta",
+            "world": "dunya",
+            "the": "in",
+            "and": "iban",
+            "is": "hiya",
+            "a": "hambuuk",
+            "good": "marayaw",
+            "day": "adlaw",
+            "how": "biyariin",
+            "are": "ka",
+            "you": "ikaw",
+            "thank": "magsukul",
+            "thanks": "magsukul",
+            "please": "tabi",
+            "yes": "oo",
+            "no": "di",
+            "house": "bay",
+            "night": "dum",
+            };
+
+        const wordBankTausugToEn = {
+            "assalamu alaykum": "hello",
+            "biyariin": "hello/how",
+            "dunya": "world",
+            "in": "the",
+            "iban": "and",
+            "hiya": "is",
+            "hambuuk": "a",
+            "marayaw": "good",
+            "adlaw": "day",
+            "ka": "are",
+            "ikaw": "you",
+            "magsukul": "thank/thanks",
+            "tabi": "please",
+            "oo": "yes",
+            "di": "no",
+            "house": "bay",
+            "night": "dum"
+        };
+
+        /*
+         * Custom Tausug pronunciation dictionary.
+         *
+         * IMPORTANT:
+         * These are pronunciation hints, not a claim that browser TTS
+         * understands Tausug phonetics. We can expand/correct this list
+         * as you provide pronunciations from real Tausug speakers.
+         */
+        const tausugPronunciation = {
+            "assalamu alaykum": "assa-la-moo, ah-lay-koom",
+            "biyariin": "be-ya-riin",
+            "dunya": "doon-YAH",
+            "in": "in",
+            "iban": "ee-ban",
+            "hiya": "he-ya",
+            "hambuuk": "humbu-UK",
+            "marayaw": "ma-ra-YAW",
+            "adlaw": "ad-lau",
+            "ka": "ka",
+            "ikaw": "e-kau",
+            "magsukul": "mag-soo-kul",
+            "tabi": "ta-be",
+            "oo": "ohh-ohh",
+            "di": "dih",
+            "dum": "doom",
+            "bay": "bai"
+        };
+
+        // Apply dictionary pronunciations to a Tausug sentence.
+        function makeTausugPronunciation(text) {
+            let spoken = text.toLowerCase();
+
+            const entries = Object.entries(tausugPronunciation)
+                .sort((a, b) => b[0].length - a[0].length);
+
+            for (const [word, pronunciation] of entries) {
+                const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                spoken = spoken.replace(
+                    new RegExp('(^|\\s)' + escaped + '(?=\\s|$)', 'gi'),
+                    '$1' + pronunciation
+                );
+            }
+
+            return spoken;
+        }
+
+        // Try to find a browser voice suitable for the requested language.
+        function chooseVoice(lang) {
+            const voices = speechSynthesis.getVoices();
+
+            if (lang === 'en-US') {
+                return voices.find(v => v.lang.toLowerCase().startsWith('en-us')) ||
+                       voices.find(v => v.lang.toLowerCase().startsWith('en')) ||
+                       null;
+            }
+
+            return null;
+        }
+
+        function speakText(text, direction) {
+            if (!text || !('speechSynthesis' in window)) {
+                alert('Text-to-speech is not supported by this browser.');
+                return;
+            }
+
+            speechSynthesis.cancel();
+
+            const isTausug = direction === 'en-to-tausug';
+            const speechText = isTausug
+                ? makeTausugPronunciation(text)
+                : text;
+
+            const speech = new SpeechSynthesisUtterance(speechText);
+
+            // There is no guaranteed native Tausug browser voice.
+            // For now we use an English voice with pronunciation hints.
+            speech.lang = isTausug ? 'en-US' : 'en-US';
+            speech.rate = isTausug ? 0.82 : 0.9;
+            speech.pitch = 1;
+
+            const voice = chooseVoice(speech.lang);
+            if (voice) speech.voice = voice;
+
+            speechSynthesis.speak(speech);
+
+            document.getElementById('stopButton').disabled = false;
+
+            speech.onend = () => {
+                document.getElementById('stopButton').disabled = true;
+            };
+
+            speech.onerror = () => {
+                document.getElementById('stopButton').disabled = true;
+            };
+        }
+
+        function translateText() {
+            const input = document.getElementById('inputText').value.toLowerCase().trim();
+            const direction = document.getElementById('direction').value;
+            const wordBank = direction === 'en-to-tausug'
+                ? wordBankEnToTausug
+                : wordBankTausugToEn;
+
+            // Match the longest phrases first.
+            const sortedEntries = Object.entries(wordBank)
+                .sort((a, b) => b[0].length - a[0].length);
+
+            let output = input;
+
+            for (const [source, target] of sortedEntries) {
+                const escaped = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                output = output.replace(
+                    new RegExp('(^|\\s)' + escaped + '(?=\\s|$)', 'gi'),
+                    '$1' + target
+                );
+            }
+
+            document.getElementById('output').innerHTML =
+                `<strong>Translated:</strong> ${output || '(no text entered)'}`;
+
+            if (output) {
+                speakText(output, direction);
+            }
+
+            document.getElementById('speakButton').disabled = !output;
+        }
+
+        function speakTranslation() {
+            const direction = document.getElementById('direction').value;
+            const outputElement = document.getElementById('output');
+            const translatedText = outputElement.innerText
+                .replace(/^Translated:\s*/i, '')
+                .trim();
+
+            if (!translatedText || translatedText === '(no text entered)') {
+                return;
+            }
+
+            speakText(translatedText, direction);
+        }
+
+        function stopSpeaking() {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+            }
+            document.getElementById('stopButton').disabled = true;
+        }
+
+        // Load voices when the browser makes them available.
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = () => {
+                speechSynthesis.getVoices();
+            };
+        }
+    </script>
+</body>
+</html>
