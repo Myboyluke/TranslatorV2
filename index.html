@@ -3,227 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English-Tausug Translator</title>
+    <title>Suara Tausug | Speech-to-Speech English-Tausug Translator</title>
+    <meta name="description" content="Free bidirectional Speech-to-Text and Text-to-Speech translator between English and Tausug with custom phonetics and persistent database.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Styles_TTS.css">
 </head>
 <body>
-    <div class="container">
-        <h1>English-Tausug Translator</h1>
-        <p>Enter text below, select the translation direction, and click "Translate" to convert using a word bank.</p>
-        
-        <select id="direction">
-            <option value="en-to-tausug">English to Tausug</option>
-            <option value="tausug-to-en">Tausug to English</option>
-        </select>
-        
-        <textarea id="inputText" placeholder="Type text here..."></textarea>
-        
-        <button onclick="translateText()">Translate</button>
-        
-        <div id="output"></div>
-        <button id="speakButton" onclick="speakTranslation()" disabled>🔊 Speak Translation</button>
-        <button id="stopButton" onclick="stopSpeaking()" disabled>⏹ Stop</button>
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-mark">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" x2="12" y1="19" y2="22"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="app-title">Suara Tausug</h1>
+                    <p class="app-subtitle">Speech-to-Speech English ⇄ Tausug Translation System</p>
+                </div>
+            </div>
+            <div class="header-badges">
+                <div id="dbModeBadge" class="status-badge ready" title="Active database mode">
+                    <span class="badge-dot green"></span> Local DB: IndexedDB (Free)
+                </div>
+                <div class="status-badge live" title="Hosted live on GitHub Pages">
+                    <span class="badge-dot blue"></span> Free Live Host: GitHub Pages
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="translatorTab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                <span>Voice Translator</span>
+            </button>
+            <button class="tab-btn" data-tab="dictionaryTab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+                <span>Dictionary</span>
+                <span id="dictCountBadge" class="counter-badge">50+</span>
+            </button>
+            <button class="tab-btn" data-tab="historyTab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>History</span>
+            </button>
+            <button class="tab-btn" data-tab="cloudDbTab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                <span>Free Database</span>
+            </button>
+            <button class="tab-btn" data-tab="hostingTab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                <span>Free Live Hosting</span>
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- TAB 1: VOICE TRANSLATOR -->
+            <section id="translatorTab" class="tab-content active">
+                <!-- Controls Bar -->
+                <div class="translation-controls">
+                    <div class="direction-wrapper">
+                        <select id="directionSelect" aria-label="Translation Direction">
+                            <option value="en-to-tausug">English ➔ Tausug (Bahasa Sūg)</option>
+                            <option value="tausug-to-en">Tausug (Bahasa Sūg) ➔ English</option>
+                        </select>
+                        <button id="swapDirectionBtn" class="icon-btn" title="Swap Translation Direction">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="auto-speak-wrapper">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="autoSpeakToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">Auto-Speak Translation</span>
+                    </div>
+                </div>
+
+                <!-- Input Card (Speech & Text) -->
+                <div class="card glass-card input-card">
+                    <div class="card-header">
+                        <span class="card-label">Voice / Text Input</span>
+                        <button id="clearInputBtn" class="clear-btn" title="Clear input text">Clear</button>
+                    </div>
+
+                    <textarea id="inputText" placeholder="Click the microphone to speak, or type here (e.g. 'hello', 'good morning', 'how are you')..."></textarea>
+
+                    <!-- Voice Interaction Area -->
+                    <div class="voice-bar">
+                        <div class="mic-container">
+                            <button id="micButton" class="mic-btn" title="Click to speak (Speech to Text)">
+                                <div class="mic-glow"></div>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                    <line x1="12" x2="12" y1="19" y2="22"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="mic-info">
+                            <div id="micStatus" class="mic-status-text">Click mic or hold to speak</div>
+                            <!-- Audio visualizer bars -->
+                            <div id="visualizer" class="sound-wave">
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                                <span class="wave-bar"></span>
+                            </div>
+                        </div>
+
+                        <button id="translateBtn" class="primary-btn translate-action-btn">
+                            <span>Translate</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Quick Phrases Bar -->
+                    <div class="quick-phrases">
+                        <span class="quick-label">Try speaking:</span>
+                        <button class="phrase-pill" data-phrase="Hello" data-direction="en-to-tausug">"Hello"</button>
+                        <button class="phrase-pill" data-phrase="Good morning" data-direction="en-to-tausug">"Good morning"</button>
+                        <button class="phrase-pill" data-phrase="How are you" data-direction="en-to-tausug">"How are you"</button>
+                        <button class="phrase-pill" data-phrase="Thank you very much" data-direction="en-to-tausug">"Thank you very much"</button>
+                        <button class="phrase-pill" data-phrase="Assalamu alaykum" data-direction="tausug-to-en">"Assalamu alaykum"</button>
+                        <button class="phrase-pill" data-phrase="Magsukul" data-direction="tausug-to-en">"Magsukul"</button>
+                    </div>
+                </div>
+
+                <!-- Output Card (Translated Text & Text-to-Speech) -->
+                <div id="outputCard" class="card glass-card output-card hidden">
+                    <div class="card-header">
+                        <span class="card-label">Translation Output</span>
+                        <div class="output-actions">
+                            <button id="copyBtn" class="icon-btn-ghost" title="Copy Translation">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                <span>Copy</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="outputText" class="translated-output"></div>
+
+                    <!-- Phonetic Guide Badge -->
+                    <div id="phoneticBadge" class="phonetic-container hidden">
+                        <span class="phonetic-tag">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                            Phonetic Pronunciation:
+                        </span>
+                        <span id="phoneticText" class="phonetic-text"></span>
+                    </div>
+
+                    <!-- Text-to-Speech Player Controls -->
+                    <div class="tts-player-bar">
+                        <div class="audio-buttons">
+                            <button id="speakBtn" class="tts-play-btn" title="Play Text-to-Speech">
+                                <svg class="play-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                <span>Speak Aloud</span>
+                            </button>
+
+                            <button id="stopBtn" class="tts-stop-btn" title="Stop Audio" disabled>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+                                <span>Stop</span>
+                            </button>
+                        </div>
+
+                        <!-- Audio playback waveform animation -->
+                        <div id="speakerVisualizer" class="sound-wave speaking-wave">
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                            <span class="wave-bar"></span>
+                        </div>
+
+                        <div class="tts-options">
+                            <label for="speedRateSelect" class="speed-label">Speed:</label>
+                            <select id="speedRateSelect" class="speed-select">
+                                <option value="0.75">0.75x</option>
+                                <option value="0.85" selected>0.85x (Clear)</option>
+                                <option value="1.0">1.0x</option>
+                                <option value="1.15">1.15x</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: DICTIONARY / WORD BANK -->
+            <section id="dictionaryTab" class="tab-content">
+                <div class="card glass-card">
+                    <div class="dict-header-row">
+                        <div>
+                            <h2>Tausug-English Vocabulary Database</h2>
+                            <p class="section-desc">Search, manage, and expand the bilingual vocabulary bank with custom phonetic guides.</p>
+                        </div>
+                        <div class="dict-actions">
+                            <button id="addWordBtn" class="primary-btn-sm">+ Add New Term</button>
+                            <button id="exportDictBtn" class="secondary-btn-sm">💾 Export JSON</button>
+                            <label class="secondary-btn-sm import-label">
+                                📥 Import JSON
+                                <input type="file" id="importDictInput" accept=".json" class="file-input-hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="search-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="dictSearchInput" placeholder="Search English, Tausug, or category...">
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>English</th>
+                                    <th>Tausug (Bahasa Sūg)</th>
+                                    <th>Phonetic Guide</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dictTableBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TRANSLATION HISTORY -->
+            <section id="historyTab" class="tab-content">
+                <div class="card glass-card">
+                    <div class="history-header-row">
+                        <div>
+                            <h2>Voice & Text Translation History</h2>
+                            <p class="section-desc">Chronological log of your translated speeches and phrases saved in the database.</p>
+                        </div>
+                        <div class="history-controls">
+                            <select id="historyFilter" class="filter-select">
+                                <option value="all">All Records</option>
+                                <option value="fav">⭐ Starred Favorites</option>
+                            </select>
+                            <button id="clearHistoryBtn" class="clear-btn">Clear History</button>
+                        </div>
+                    </div>
+
+                    <div id="historyList" class="history-container">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: FREE DATABASE SYNC -->
+            <section id="cloudDbTab" class="tab-content">
+                <div class="card glass-card">
+                    <h2>Free Database Setup & Cloud Sync</h2>
+                    <p class="section-desc">Your translation system uses 100% free database solutions. Choose your preferred mode below:</p>
+
+                    <div class="db-options-grid">
+                        <div class="db-card selected">
+                            <div class="db-card-icon">🗄️</div>
+                            <h3>1. IndexedDB (Active by default)</h3>
+                            <span class="free-badge">100% Free & Zero Config</span>
+                            <p>Browser-native SQL/NoSQL storage built right into your browser. Persists all custom vocabulary, phonetics, and history across browser reloads without signing up for any accounts.</p>
+                            <ul class="feature-bullets">
+                                <li>✓ Zero API keys required</li>
+                                <li>✓ Works offline and directly on GitHub Pages</li>
+                                <li>✓ Instant read/write speed</li>
+                            </ul>
+                        </div>
+
+                        <div class="db-card">
+                            <div class="db-card-icon">🔥</div>
+                            <h3>2. Google Firebase Firestore</h3>
+                            <span class="free-badge">Free Spark Plan (Cloud Sync)</span>
+                            <p>Sync your dictionary across multiple devices and users via Google Cloud's free Firestore NoSQL database (1GB storage, 50,000 reads/day free forever).</p>
+                            <ul class="feature-bullets">
+                                <li>✓ Real-time cloud sync across phones & PCs</li>
+                                <li>✓ Free forever under Google Spark tier</li>
+                                <li>✓ Works directly via REST API</li>
+                            </ul>
+                        </div>
+
+                        <div class="db-card">
+                            <div class="db-card-icon">⚡</div>
+                            <h3>3. Supabase (Free PostgreSQL)</h3>
+                            <span class="free-badge">Free Tier (500MB DB)</span>
+                            <p>Connect a free open-source PostgreSQL database with instant REST APIs for team or community dictionary expansion.</p>
+                            <ul class="feature-bullets">
+                                <li>✓ Free PostgreSQL cloud database</li>
+                                <li>✓ Secure REST API key integration</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Cloud Configuration Form -->
+                    <form id="cloudDbForm" class="config-form">
+                        <h3>Connect Cloud Database (Optional)</h3>
+                        <p class="form-help">Leave on "Local IndexedDB" if you do not want to set up cloud accounts. It works immediately!</p>
+
+                        <div class="form-group">
+                            <label for="cloudDbType">Database Provider:</label>
+                            <select id="cloudDbType">
+                                <option value="none">Browser-Native IndexedDB (Free, Zero Setup)</option>
+                                <option value="firebase">Google Firebase Firestore (Free Cloud Sync)</option>
+                                <option value="supabase">Supabase PostgreSQL (Free Cloud Sync)</option>
+                            </select>
+                        </div>
+
+                        <!-- Firebase fields -->
+                        <div id="firebaseFields" class="hidden">
+                            <div class="form-group">
+                                <label for="firebaseProjectId">Firebase Project ID:</label>
+                                <input type="text" id="firebaseProjectId" placeholder="e.g. tausug-translator-v2">
+                            </div>
+                            <div class="form-group">
+                                <label for="firebaseApiKey">Firebase Web API Key:</label>
+                                <input type="text" id="firebaseApiKey" placeholder="AIzaSy...">
+                            </div>
+                            <div class="setup-hint">
+                                💡 <strong>How to get free Firebase credentials:</strong> Go to <a href="https://console.firebase.google.com" target="_blank" rel="noopener">Firebase Console</a> (free), create a project, enable "Firestore Database", and copy your Project ID & Web API Key.
+                            </div>
+                        </div>
+
+                        <!-- Supabase fields -->
+                        <div id="supabaseFields" class="hidden">
+                            <div class="form-group">
+                                <label for="supabaseUrl">Supabase Project URL:</label>
+                                <input type="url" id="supabaseUrl" placeholder="https://your-project.supabase.co">
+                            </div>
+                            <div class="form-group">
+                                <label for="supabaseKey">Supabase Anon Key:</label>
+                                <input type="text" id="supabaseKey" placeholder="eyJhbGciOi...">
+                            </div>
+                            <div class="setup-hint">
+                                💡 <strong>How to get free Supabase credentials:</strong> Go to <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a>, create a free project, create a table named <code>tausug_dictionary</code>, and copy your Project URL & Anon Key.
+                            </div>
+                        </div>
+
+                        <div class="form-footer">
+                            <button type="submit" id="testCloudDbBtn" class="primary-btn">Test & Save Database Settings</button>
+                            <div id="cloudDbStatus"></div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 5: FREE LIVE HOSTING GUIDE -->
+            <section id="hostingTab" class="tab-content">
+                <div class="card glass-card">
+                    <h2>Live Hosting on GitHub Pages (100% Free Forever)</h2>
+                    <p class="section-desc">This repository is already configured for zero-cost, continuous deployment with SSL encryption via GitHub Pages.</p>
+
+                    <div class="hosting-steps">
+                        <div class="step-card">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Push Your Changes to GitHub</h3>
+                                <p>We're currently on the <code>translator</code> branch. Once you merge or push, your code is stored safely on GitHub at: <a href="https://github.com/Myboyluke/TranslatorV2" target="_blank" rel="noopener">github.com/Myboyluke/TranslatorV2</a>.</p>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Enable GitHub Pages in 3 Clicks</h3>
+                                <ol class="instructions-list">
+                                    <li>Open your repository on GitHub: <strong>Myboyluke / TranslatorV2</strong></li>
+                                    <li>Click on <strong>Settings</strong> ➔ <strong>Pages</strong> (in the left sidebar)</li>
+                                    <li>Under <strong>"Build and deployment"</strong> ➔ <strong>Branch</strong>, choose <strong><code>translator</code></strong> (or <code>main</code>), select folder <strong><code>/ (root)</code></strong>, and click <strong>Save</strong>!</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="step-card">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Your Live URL is Instant & Secure!</h3>
+                                <p>GitHub will automatically build and publish your site at:</p>
+                                <div class="url-preview">
+                                    <span class="url-text">https://myboyluke.github.io/TranslatorV2/</span>
+                                    <span class="https-badge">🔒 Free HTTPS (Microphone STT enabled)</span>
+                                </div>
+                                <p class="note-text"><em>Note: Modern browsers require HTTPS to access the microphone for speech recognition. GitHub Pages provides free SSL HTTPS automatically!</em></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Suara Tausug Voice Translation System • English ⇄ Tausug (Bahasa Sūg) • Powered by Web Speech & IndexedDB</p>
+        </footer>
     </div>
 
-    <script src="script.js"></script>
-    <script>
-        // Tausug word banks
-        const wordBankEnToTausug = {
-            "hello": "assalamu alaykum",
-            "hi": "kumusta",
-            "world": "dunya",
-            "the": "in",
-            "and": "iban",
-            "is": "hiya",
-            "a": "hambuuk",
-            "good": "marayaw",
-            "day": "adlaw",
-            "how": "biyariin",
-            "are": "ka",
-            "you": "ikaw",
-            "thank": "magsukul",
-            "thanks": "magsukul",
-            "please": "tabi",
-            "yes": "oo",
-            "no": "di",
-            "house": "bay",
-            "night": "dum",
-            };
+    <!-- Add Word Modal -->
+    <div id="addWordModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add New Vocabulary Term</h3>
+                <button id="closeWordModalBtn" class="close-btn">&times;</button>
+            </div>
+            <form id="addWordForm">
+                <div class="form-group">
+                    <label for="newEnglish">English Term / Phrase:</label>
+                    <input type="text" id="newEnglish" required placeholder="e.g. welcome">
+                </div>
+                <div class="form-group">
+                    <label for="newTausug">Tausug Translation:</label>
+                    <input type="text" id="newTausug" required placeholder="e.g. pagsangbay">
+                </div>
+                <div class="form-group">
+                    <label for="newPhonetic">Phonetic Guide (For Speech Pronunciation):</label>
+                    <input type="text" id="newPhonetic" placeholder="e.g. pag-sang-bye">
+                    <span class="field-hint">Phonetic spelling guides the browser speech synthesizer to sound natural.</span>
+                </div>
+                <div class="form-group">
+                    <label for="newCategory">Category:</label>
+                    <select id="newCategory">
+                        <option value="greetings">Greetings & Courtesies</option>
+                        <option value="common">Common Words</option>
+                        <option value="verbs">Verbs / Actions</option>
+                        <option value="food">Food & Drink</option>
+                        <option value="people">People & Family</option>
+                        <option value="places">Places & Travel</option>
+                        <option value="custom" selected>Custom</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="primary-btn">Save Word to Database</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        const wordBankTausugToEn = {
-            "assalamu alaykum": "hello",
-            "biyariin": "hello/how",
-            "dunya": "world",
-            "in": "the",
-            "iban": "and",
-            "hiya": "is",
-            "hambuuk": "a",
-            "marayaw": "good",
-            "adlaw": "day",
-            "ka": "are",
-            "ikaw": "you",
-            "magsukul": "thank/thanks",
-            "tabi": "please",
-            "oo": "yes",
-            "di": "no",
-            "house": "bay",
-            "night": "dum"
-        };
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
 
-        /*
-         * Custom Tausug pronunciation dictionary.
-         *
-         * IMPORTANT:
-         * These are pronunciation hints, not a claim that browser TTS
-         * understands Tausug phonetics. We can expand/correct this list
-         * as you provide pronunciations from real Tausug speakers.
-         */
-        const tausugPronunciation = {
-            "assalamu alaykum": "assa-la-moo, ah-lay-koom",
-            "biyariin": "be-ya-riin",
-            "dunya": "doon-YAH",
-            "in": "in",
-            "iban": "ee-ban",
-            "hiya": "he-ya",
-            "hambuuk": "humbu-UK",
-            "marayaw": "ma-ra-YAW",
-            "adlaw": "ad-lau",
-            "ka": "ka",
-            "ikaw": "e-kau",
-            "magsukul": "mag-soo-kul",
-            "tabi": "ta-be",
-            "oo": "ohh-ohh",
-            "di": "dih",
-            "dum": "doom",
-            "bay": "bai"
-        };
-
-        // Apply dictionary pronunciations to a Tausug sentence.
-        function makeTausugPronunciation(text) {
-            let spoken = text.toLowerCase();
-
-            const entries = Object.entries(tausugPronunciation)
-                .sort((a, b) => b[0].length - a[0].length);
-
-            for (const [word, pronunciation] of entries) {
-                const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                spoken = spoken.replace(
-                    new RegExp('(^|\\s)' + escaped + '(?=\\s|$)', 'gi'),
-                    '$1' + pronunciation
-                );
-            }
-
-            return spoken;
-        }
-
-        // Try to find a browser voice suitable for the requested language.
-        function chooseVoice(lang) {
-            const voices = speechSynthesis.getVoices();
-
-            if (lang === 'en-US') {
-                return voices.find(v => v.lang.toLowerCase().startsWith('en-us')) ||
-                       voices.find(v => v.lang.toLowerCase().startsWith('en')) ||
-                       null;
-            }
-
-            return null;
-        }
-
-        function speakText(text, direction) {
-            if (!text || !('speechSynthesis' in window)) {
-                alert('Text-to-speech is not supported by this browser.');
-                return;
-            }
-
-            speechSynthesis.cancel();
-
-            const isTausug = direction === 'en-to-tausug';
-            const speechText = isTausug
-                ? makeTausugPronunciation(text)
-                : text;
-
-            const speech = new SpeechSynthesisUtterance(speechText);
-
-            // There is no guaranteed native Tausug browser voice.
-            // For now we use an English voice with pronunciation hints.
-            speech.lang = isTausug ? 'en-US' : 'en-US';
-            speech.rate = isTausug ? 0.82 : 0.9;
-            speech.pitch = 1;
-
-            const voice = chooseVoice(speech.lang);
-            if (voice) speech.voice = voice;
-
-            speechSynthesis.speak(speech);
-
-            document.getElementById('stopButton').disabled = false;
-
-            speech.onend = () => {
-                document.getElementById('stopButton').disabled = true;
-            };
-
-            speech.onerror = () => {
-                document.getElementById('stopButton').disabled = true;
-            };
-        }
-
-        function translateText() {
-            const input = document.getElementById('inputText').value.toLowerCase().trim();
-            const direction = document.getElementById('direction').value;
-            const wordBank = direction === 'en-to-tausug'
-                ? wordBankEnToTausug
-                : wordBankTausugToEn;
-
-            // Match the longest phrases first.
-            const sortedEntries = Object.entries(wordBank)
-                .sort((a, b) => b[0].length - a[0].length);
-
-            let output = input;
-
-            for (const [source, target] of sortedEntries) {
-                const escaped = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                output = output.replace(
-                    new RegExp('(^|\\s)' + escaped + '(?=\\s|$)', 'gi'),
-                    '$1' + target
-                );
-            }
-
-            document.getElementById('output').innerHTML =
-                `<strong>Translated:</strong> ${output || '(no text entered)'}`;
-
-            if (output) {
-                speakText(output, direction);
-            }
-
-            document.getElementById('speakButton').disabled = !output;
-        }
-
-        function speakTranslation() {
-            const direction = document.getElementById('direction').value;
-            const outputElement = document.getElementById('output');
-            const translatedText = outputElement.innerText
-                .replace(/^Translated:\s*/i, '')
-                .trim();
-
-            if (!translatedText || translatedText === '(no text entered)') {
-                return;
-            }
-
-            speakText(translatedText, direction);
-        }
-
-        function stopSpeaking() {
-            if ('speechSynthesis' in window) {
-                speechSynthesis.cancel();
-            }
-            document.getElementById('stopButton').disabled = true;
-        }
-
-        // Load voices when the browser makes them available.
-        if ('speechSynthesis' in window) {
-            speechSynthesis.onvoiceschanged = () => {
-                speechSynthesis.getVoices();
-            };
-        }
-    </script>
+    <!-- Application Scripts -->
+    <script src="db.js"></script>
+    <script src="stt.js"></script>
+    <script src="tts.js"></script>
+    <script src="translator.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
