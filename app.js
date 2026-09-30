@@ -61,6 +61,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         cloudDbStatus: document.getElementById('cloudDbStatus'),
         dbModeBadge: document.getElementById('dbModeBadge'),
 
+        // Piper TTS UI Elements
+        enginePiperBtn: document.getElementById('enginePiperBtn'),
+        engineBrowserBtn: document.getElementById('engineBrowserBtn'),
+        piperModelGroup: document.getElementById('piperModelGroup'),
+        piperVoiceSelect: document.getElementById('piperVoiceSelect'),
+        cachePiperModelBtn: document.getElementById('cachePiperModelBtn'),
+        piperStatusBadge: document.getElementById('piperStatusBadge'),
+        piperProgressBar: document.getElementById('piperProgressBar'),
+        piperProgressFill: document.getElementById('piperProgressFill'),
+
         // Toast
         toast: document.getElementById('toast')
     };
@@ -79,6 +89,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             elements.toast.className = 'toast';
         }, 3500);
     }
+    window.showAppToast = showToast;
 
     // Initialize Database & Engine
     try {
@@ -215,18 +226,53 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     /**
-     * Text-to-Speech Playback
+     * Text-to-Speech Playback with Piper Neural & Fallback Handlers
      */
+    function updatePiperProgressUI(status, progress = 0) {
+        if (!elements.piperStatusBadge) return;
+        if (status === 'downloading') {
+            elements.piperProgressBar.classList.remove('hidden');
+            elements.piperProgressFill.style.width = `${progress}%`;
+            elements.piperStatusBadge.innerHTML = `<span class="badge-dot pulse-green"></span> Downloading Piper Neural Model: ${progress}%...`;
+        } else if (status === 'synthesizing') {
+            elements.piperProgressBar.classList.remove('hidden');
+            elements.piperProgressFill.style.width = '100%';
+            elements.piperStatusBadge.innerHTML = `<span class="badge-dot blue"></span> Synthesizing Neural Audio with Piper...`;
+        } else if (status === 'playing') {
+            elements.piperProgressBar.classList.add('hidden');
+            elements.piperStatusBadge.innerHTML = `<span class="badge-dot pulse-green"></span> 🔊 Piper Neural Audio Playing`;
+        }
+    }
+
+    function resetPiperStatusUI() {
+        if (!elements.piperStatusBadge) return;
+        elements.piperProgressBar.classList.add('hidden');
+        if (window.ttsEngine.activeEngine === 'piper') {
+            const voiceId = elements.piperVoiceSelect ? elements.piperVoiceSelect.value : 'en_US-lessac-medium';
+            const isCached = window.ttsEngine.piper.isVoiceCached(voiceId);
+            elements.piperStatusBadge.innerHTML = isCached
+                ? `<span class="badge-dot green"></span> 🟢 Piper Neural Model Cached & Ready`
+                : `<span class="badge-dot blue"></span> Piper Neural Ready (Auto-loads on play)`;
+        } else {
+            elements.piperStatusBadge.innerHTML = `<span class="badge-dot blue"></span> Browser Built-in TTS Active`;
+        }
+    }
+
     function playCurrentTTS() {
         if (!currentTranslation || !currentTranslation.outputText) return;
 
         const isTausug = currentTranslation.direction === 'en-to-tausug';
         const rate = parseFloat(elements.speedRateSelect.value) || 0.85;
+        const piperVoiceId = elements.piperVoiceSelect ? elements.piperVoiceSelect.value : 'en_US-lessac-medium';
 
         window.ttsEngine.speak(currentTranslation.outputText, {
             isTausug,
             phoneticOverride: currentTranslation.phoneticText,
             rate,
+            piperVoiceId,
+            onModelProgress: ({ status, progress }) => {
+                updatePiperProgressUI(status, progress);
+            },
             onStart: () => {
                 isSpeaking = true;
                 elements.speakBtn.classList.add('playing');
@@ -238,12 +284,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 elements.speakBtn.classList.remove('playing');
                 elements.stopBtn.disabled = true;
                 elements.speakerVisualizer.classList.remove('active');
+                resetPiperStatusUI();
             },
             onError: (err) => {
                 isSpeaking = false;
                 elements.speakBtn.classList.remove('playing');
                 elements.stopBtn.disabled = true;
                 elements.speakerVisualizer.classList.remove('active');
+                resetPiperStatusUI();
                 console.warn("TTS error:", err);
             }
         });
@@ -255,6 +303,70 @@ document.addEventListener('DOMContentLoaded', async () => {
         elements.speakBtn.classList.remove('playing');
         elements.stopBtn.disabled = true;
         elements.speakerVisualizer.classList.remove('active');
+        resetPiperStatusUI();
+    }
+
+    // Piper Engine Switching
+    function setTtsEngine(engine) {
+        window.ttsEngine.activeEngine = engine;
+        if (engine === 'piper') {
+            elements.enginePiperBtn.classList.add('active');
+            elements.engineBrowserBtn.classList.remove('active');
+            elements.piperModelGroup.classList.remove('hidden');
+            showToast("Switched to Piper Neural TTS (Natural AI Audio) 🌟");
+        } else {
+            elements.engineBrowserBtn.classList.add('active');
+            elements.enginePiperBtn.classList.remove('active');
+            elements.piperModelGroup.classList.add('hidden');
+            showToast("Switched to Standard Browser SpeechSynthesis 🌐");
+        }
+        resetPiperStatusUI();
+    }
+
+    if (elements.enginePiperBtn) {
+        elements.enginePiperBtn.addEventListener('click', () => setTtsEngine('piper'));
+    }
+    if (elements.engineBrowserBtn) {
+        elements.engineBrowserBtn.addEventListener('click', () => setTtsEngine('browser'));
+    }
+
+    // Piper Pre-cache Model
+    async function handleCacheModel(voiceId) {
+        try {
+            showToast(`Downloading Piper Neural Model (${voiceId})...`, "info");
+            updatePiperProgressUI('downloading', 5);
+            await window.ttsEngine.piper.downloadModel(voiceId, (percent) => {
+                updatePiperProgressUI('downloading', percent);
+            });
+            resetPiperStatusUI();
+            showToast(`Piper model (${voiceId}) cached offline successfully! 🎉`, "success");
+        } catch (err) {
+            console.error("Cache error:", err);
+            resetPiperStatusUI();
+            showToast("Failed to pre-cache Piper model: " + err.message, "error");
+        }
+    }
+
+    if (elements.cachePiperModelBtn) {
+        elements.cachePiperModelBtn.addEventListener('click', () => {
+            const voiceId = elements.piperVoiceSelect ? elements.piperVoiceSelect.value : 'en_US-lessac-medium';
+            handleCacheModel(voiceId);
+        });
+    }
+
+    // Pre-cache buttons in Piper Tab
+    document.querySelectorAll('.download-voice-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const voiceId = btn.getAttribute('data-voice');
+            handleCacheModel(voiceId);
+        });
+    });
+
+    if (elements.piperVoiceSelect) {
+        elements.piperVoiceSelect.addEventListener('change', () => {
+            window.ttsEngine.piper.currentVoiceId = elements.piperVoiceSelect.value;
+            resetPiperStatusUI();
+        });
     }
 
     // Audio & Action Listeners

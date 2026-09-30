@@ -57,6 +57,10 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
                 <span>Free Database</span>
             </button>
+            <button class="tab-btn" data-tab="piperTab">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span>Piper Neural TTS</span>
+            </button>
             <button class="tab-btn" data-tab="hostingTab">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
                 <span>Free Live Hosting</span>
@@ -161,6 +165,45 @@
                             Phonetic Pronunciation:
                         </span>
                         <span id="phoneticText" class="phonetic-text"></span>
+                    </div>
+
+                    <!-- Text-to-Speech Player & Piper Neural Controls -->
+                    <div class="tts-engine-panel">
+                        <div class="engine-selector-row">
+                            <div class="engine-badge-group">
+                                <span class="engine-label">Voice Engine:</span>
+                                <div class="segmented-control">
+                                    <button type="button" class="segmented-btn active" id="enginePiperBtn" data-engine="piper">
+                                        <span>🌟 Piper Neural TTS (Natural AI)</span>
+                                    </button>
+                                    <button type="button" class="segmented-btn" id="engineBrowserBtn" data-engine="browser">
+                                        <span>🌐 Standard Browser TTS</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Piper Model Controls (Visible when Piper is active) -->
+                            <div id="piperModelGroup" class="piper-model-group">
+                                <label for="piperVoiceSelect" class="speed-label">Piper Model:</label>
+                                <select id="piperVoiceSelect" class="piper-select">
+                                    <option value="en_US-lessac-medium" selected>Piper Lessac (Natural Medium, ~25MB)</option>
+                                    <option value="en_US-hfc_female-medium">Piper HFC Female (Expressive, ~26MB)</option>
+                                    <option value="en_US-amy-low">Piper Amy (Compact Fast, ~14MB)</option>
+                                    <option value="en_US-ryan-medium">Piper Ryan (Natural Male, ~28MB)</option>
+                                </select>
+                                <button id="cachePiperModelBtn" class="secondary-btn-xs" title="Download and cache model for offline use">📥 Pre-cache</button>
+                            </div>
+                        </div>
+
+                        <!-- Piper Progress & Status Bar -->
+                        <div id="piperStatusRow" class="piper-status-row">
+                            <span id="piperStatusBadge" class="piper-status-badge">
+                                <span class="badge-dot blue"></span> Piper Neural Ready (Auto-loads on play)
+                            </span>
+                            <div id="piperProgressBar" class="piper-progress-container hidden">
+                                <div id="piperProgressFill" class="piper-progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Text-to-Speech Player Controls -->
@@ -398,6 +441,73 @@
                                 <p class="note-text"><em>Note: Modern browsers require HTTPS to access the microphone for speech recognition. GitHub Pages provides free SSL HTTPS automatically!</em></p>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: PIPER NEURAL TTS SETTINGS & INFO -->
+            <section id="piperTab" class="tab-content">
+                <div class="card glass-card">
+                    <div class="piper-info-header">
+                        <div>
+                            <h2>Piper Neural Text-to-Speech (VITS / ONNX)</h2>
+                            <p class="section-desc">Run state-of-the-art neural speech synthesis locally inside your browser with WebAssembly & ONNX Runtime Web.</p>
+                        </div>
+                        <span class="neural-badge">🧠 Neural AI Voice Active</span>
+                    </div>
+
+                    <div class="piper-features-grid">
+                        <div class="piper-feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3>100% Client-Side & Private</h3>
+                            <p>Runs entirely inside your browser using WebAssembly. No server GPU or cloud API keys required, making it 100% free forever and private.</p>
+                        </div>
+                        <div class="piper-feature-card">
+                            <div class="feature-icon">💾</div>
+                            <h3>Offline OPFS Caching</h3>
+                            <p>Once downloaded, models are cached in your browser's Origin Private File System (OPFS). Future visits load instantly with zero data usage.</p>
+                        </div>
+                        <div class="piper-feature-card">
+                            <div class="feature-icon">🗣️</div>
+                            <h3>Phonetic Articulation</h3>
+                            <p>Tausug vocabulary is translated and voiced through custom phonetic mappings, giving natural prosody even for non-standard dialect sounds.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="subsection-title">Available Piper Neural Voice Models</h3>
+                    <div class="piper-models-list">
+                        <div class="model-row">
+                            <div class="model-details">
+                                <div class="model-name">Piper Lessac (en_US-lessac-medium) <span class="tag-default">Recommended</span></div>
+                                <div class="model-sub">Balanced neural voice with crystal clear articulation (~25MB)</div>
+                            </div>
+                            <button class="secondary-btn-sm download-voice-btn" data-voice="en_US-lessac-medium">📥 Pre-cache Model</button>
+                        </div>
+                        <div class="model-row">
+                            <div class="model-details">
+                                <div class="model-name">Piper HFC Female (en_US-hfc_female-medium)</div>
+                                <div class="model-sub">Expressive warm female voice with natural cadence (~26MB)</div>
+                            </div>
+                            <button class="secondary-btn-sm download-voice-btn" data-voice="en_US-hfc_female-medium">📥 Pre-cache Model</button>
+                        </div>
+                        <div class="model-row">
+                            <div class="model-details">
+                                <div class="model-name">Piper Amy (en_US-amy-low)</div>
+                                <div class="model-sub">Ultra-fast lightweight model optimized for mobile and low-bandwidth (~14MB)</div>
+                            </div>
+                            <button class="secondary-btn-sm download-voice-btn" data-voice="en_US-amy-low">📥 Pre-cache Model</button>
+                        </div>
+                        <div class="model-row">
+                            <div class="model-details">
+                                <div class="model-name">Piper Ryan (en_US-ryan-medium)</div>
+                                <div class="model-sub">Natural deep male neural voice (~28MB)</div>
+                            </div>
+                            <button class="secondary-btn-sm download-voice-btn" data-voice="en_US-ryan-medium">📥 Pre-cache Model</button>
+                        </div>
+                    </div>
+
+                    <div class="setup-hint" style="margin-top: 24px;">
+                        💡 <strong>Fallback Guarantee:</strong> If your device is offline or in low-memory mode, Suara Tausug automatically falls back to the browser's built-in Web Speech API so voice playback never fails!
                     </div>
                 </div>
             </section>

@@ -1370,6 +1370,224 @@ textarea::placeholder {
     display: none !important;
 }
 
+/* Piper Neural TTS Panel */
+.tts-engine-panel {
+    background: rgba(10, 15, 28, 0.6);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.engine-selector-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.engine-badge-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.engine-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.segmented-control {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 3px;
+    gap: 4px;
+}
+
+.segmented-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.segmented-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.piper-model-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.piper-select {
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+}
+
+.secondary-btn-xs {
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: var(--radius-sm);
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    color: #c7d2fe;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.secondary-btn-xs:hover {
+    background: rgba(99, 102, 241, 0.3);
+    color: #ffffff;
+}
+
+.piper-status-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.piper-status-badge {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.piper-progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.piper-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #06b6d4, #6366f1);
+    border-radius: var(--radius-full);
+    transition: width 0.2s ease;
+}
+
+/* Piper Tab Information Styles */
+.piper-info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.neural-badge {
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    color: #c4b5fd;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.piper-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.piper-feature-card {
+    background: rgba(10, 15, 28, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 18px;
+}
+
+.feature-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.piper-feature-card h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: #ffffff;
+}
+
+.piper-feature-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.subsection-title {
+    font-size: 16px;
+    margin-bottom: 14px;
+    color: #ffffff;
+}
+
+.piper-models-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.model-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    background: rgba(10, 15, 28, 0.5);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.model-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.model-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.tag-default {
+    background: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    margin-left: 6px;
+    font-weight: 500;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
     .app-header {
