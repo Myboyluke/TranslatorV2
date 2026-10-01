@@ -6,99 +6,120 @@ Built with a free persistent database architecture and ready for 100% free live 
 
 ---
 
-## 🌟 Key Features
+## 📖 Quick Start: How to Run This System (For New Users)
 
-1. **Speech-to-Text (STT)**:
-   - Voice input via browser-native Web Speech Recognition (`window.SpeechRecognition` / `window.webkitSpeechRecognition`).
-   - Real-time animated audio wave visualizer and mic pulse indicator.
-   - Interim transcript display and silence auto-detection.
+Follow these simple step-by-step instructions to run the application on your computer:
 
-2. **Bidirectional Translation Engine**:
-   - English ➔ Tausug (Bahasa Sūg) & Tausug ➔ English.
-   - Intelligent phrase prioritization (matches multi-word phrases before individual words).
-   - Case-preservation and phonetic guide generation.
-
-3. **Text-to-Speech (TTS) with Custom Phonetics**:
-   - Synthesizes translated speech using Web Speech Synthesis API.
-   - Custom Tausug phonetic mapping engine (`makeTausugPronunciation`) ensuring natural articulation.
-   - Speed rate controls (0.75x to 1.15x), pitch adjustment, and stop/replay controls.
-   - **Auto-Speak mode**: Automatically speaks translated audio as soon as voice recognition finishes.
-
-4. **100% Free Database Layer**:
-   - **Local IndexedDB (Default & Active)**: Built-in browser database requiring **zero setup**, **no API keys**, and **no monthly cost**. Stores vocabulary, custom words, and translation history offline & online.
-   - **Google Firebase Firestore (Optional Cloud Sync)**: Free Spark tier support for real-time multi-device synchronization via REST API.
-   - **Supabase (Optional Cloud Sync)**: Free tier PostgreSQL support.
-   - **JSON Backup**: One-click Export and Import of dictionary and history.
-
-5. **Free Live Hosting via GitHub Pages**:
-   - Zero-server static architecture running directly on GitHub Pages.
-   - Automated deployment workflow via GitHub Actions (`.github/workflows/deploy.yml`).
-   - Free HTTPS SSL (essential for browser microphone access).
+### Prerequisites
+- A modern web browser: **Google Chrome** or **Microsoft Edge** (recommended for full microphone and speech synthesis support).
+- **Node.js** (recommended, download from [nodejs.org](https://nodejs.org/)) OR Python.
 
 ---
 
-## 🚀 How to Enable Free Live Hosting on GitHub Pages
+### Step 1: Download or Clone the Repository
+Open your terminal (PowerShell, Command Prompt, or Git Bash) and run:
+```bash
+git clone https://github.com/Myboyluke/TranslatorV2.git
+cd TranslatorV2
+git checkout translator
+```
+*(Or simply download the ZIP file from GitHub and extract it to a folder).*
 
-This repository is already configured to deploy on GitHub Pages:
+---
 
-### Method 1: GitHub Settings (Instant)
-1. Open your repository on GitHub: [`Myboyluke/TranslatorV2`](https://github.com/Myboyluke/TranslatorV2).
-2. Click **Settings** ➔ **Pages** (under "Code and automation" in the left sidebar).
-3. Under **"Build and deployment"**:
-   - Source: **Deploy from a branch**
-   - Branch: **`translator`** (or `main`), Folder: **`/ (root)`**
-4. Click **Save**.
-5. Within 1–2 minutes, your live site will be accessible at:
+### Step 2: Start the Local Server
+
+Choose **any one** of the following methods to start the local server:
+
+#### Option A: Using Node.js (Easiest & Built-In)
+Inside the project folder, simply run:
+```bash
+node server.js
+```
+You will see: `Server running at http://127.0.0.1:3000/`.
+
+#### Option B: Using Python (If you have Python installed)
+```bash
+python -m http.server 3000
+```
+
+#### Option C: Using VS Code "Live Server" Extension
+1. Open the project folder in **Visual Studio Code**.
+2. Install the **"Live Server"** extension (by Ritwick Dey).
+3. Right-click on `index.html` and click **"Open with Live Server"**.
+
+---
+
+### Step 3: Open in Your Browser
+
+1. Navigate to:
+   ```
+   http://127.0.0.1:3000/
+   ```
+   *(or `http://localhost:3000/`)*
+2. **Important**: When prompted by your browser, click **"Allow"** to grant microphone permission.
+
+---
+
+### Step 4: How to Use the System
+
+1. **Speech-to-Speech Translation**:
+   - Choose your translation direction: **English ➔ Tausug** or **Tausug ➔ English**.
+   - Click the glowing **Microphone button** 🎙️ and speak clearly.
+   - The system transcribes your speech into text, translates it, displays the phonetic pronunciation guide, and automatically speaks the translated sentence aloud!
+2. **Text-to-Speech (TTS) Voice Engines**:
+   - **Standard Browser TTS (Instant)**: Fast, zero-download, natural speech.
+   - **Piper Neural TTS (Natural AI)**: State-of-the-art neural AI voice running client-side via WebAssembly.
+3. **Dictionary Manager (Tab 2)**:
+   - Search the 50+ built-in English-Tausug vocabulary words.
+   - Add new custom words or phrases with custom phonetic guides.
+   - Export or import your dictionary as a JSON backup.
+4. **Translation History (Tab 3)**:
+   - View past speech translations, replay audio, or star your favorites.
+
+---
+
+## 🌐 Alternative: Run Live Online (No Installation Needed)
+
+If you have deployed this repository to **GitHub Pages**, anyone can access it directly without installing anything:
+
+1. Open:
    ```
    https://myboyluke.github.io/TranslatorV2/
    ```
-
-### Method 2: GitHub Actions (Automated CI/CD)
-The `.github/workflows/deploy.yml` workflow is included. Under **Settings ➔ Pages ➔ Source**, select **GitHub Actions**, and every push to `translator` or `main` will build and publish automatically.
-
----
-
-## 🗄️ Free Database Configuration
-
-### 1. Browser IndexedDB (Zero Setup)
-No configuration required! When you open the application, it automatically seeds over 50+ English-Tausug terms into an IndexedDB database on your device. All additions, deletions, and history logs persist automatically.
-
-### 2. Optional: Connect Free Firebase Firestore
-If you want your vocabulary to sync to the cloud:
-1. Go to the [Firebase Console](https://console.firebase.google.com/) (100% free Spark plan).
-2. Create a project and enable **Cloud Firestore**.
-3. Under Project Settings, copy your **Project ID** and **Web API Key**.
-4. In Suara Tausug, switch to the **"Free Database"** tab, select **Google Firebase Firestore**, paste your keys, and click **"Test & Save Database Settings"**.
+2. Allow microphone access when prompted.
+3. Use the app on any desktop, laptop, or mobile phone with a modern browser!
 
 ---
 
-## 🛠️ Project Structure
+## 🚀 How to Deploy to GitHub Pages (100% Free Forever)
 
-```
-TranslatorV2/
-├── index.html                  # Accessible modern responsive UI
-├── Styles_TTS.css              # Glassmorphic dark theme & audio visualizer
-├── db.js                       # IndexedDB & cloud sync database manager
-├── stt.js                      # Speech-to-Text engine (Web Speech API)
-├── tts.js                      # Text-to-Speech engine & custom phonetics
-├── translator.js               # Bidirectional translation & phonetic compiler
-├── app.js                      # Application coordinator & event bindings
-├── .github/workflows/
-│   └── deploy.yml              # GitHub Pages deployment automation
-└── README.md                   # Documentation & hosting guide
-```
+1. Push the branch to your GitHub repository:
+   ```bash
+   git push -u origin translator
+   ```
+2. Open your repository on GitHub: [`Myboyluke/TranslatorV2`](https://github.com/Myboyluke/TranslatorV2).
+3. Go to **Settings** ➔ **Pages** (in the left sidebar).
+4. Under **"Build and deployment"**:
+   - Source: **Deploy from a branch**
+   - Branch: **`translator`**, Folder: **`/ (root)`**
+   - Click **Save**.
+5. Within 1–2 minutes, your live site will be accessible at `https://myboyluke.github.io/TranslatorV2/`.
 
 ---
 
-## 💻 Local Testing
+## 🗄️ Database Architecture
 
-You can preview the app locally by launching any static file server:
+- **Browser IndexedDB (100% Free & Active by Default)**: Requires zero accounts, zero API keys, and works offline. Automatically seeds with initial vocabulary and persists all new words and history.
+- **Cloud Sync (Optional)**: In the **"Free Database"** tab, you can connect a free Google Firebase Firestore or Supabase database for multi-device synchronization.
 
-```powershell
-# Using Node
-npx serve .
+---
 
-# Or simply open index.html in Google Chrome or Microsoft Edge
-```
+## ❓ Troubleshooting & FAQs
 
-> **Note on Microphone Permissions**: Web browsers require either `http://localhost` or a secure `https://` origin (like GitHub Pages) to grant microphone access for Speech-to-Text.
+- **Microphone not working?**
+  - Make sure you accessed the site via `http://localhost:3000` or `http://127.0.0.1:3000` (or secure `https://`). Browsers block microphone access on plain `file:///` URLs.
+  - Click the **lock/tune icon** in the browser address bar and ensure **Microphone** is set to **"Allow"**.
+- **No speech audio?**
+  - Ensure your system speakers or headphones are turned on and not muted.
+  - Toggle between **Standard Browser TTS** and **Piper Neural TTS** in the voice engine options.
