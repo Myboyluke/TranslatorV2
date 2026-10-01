@@ -184,7 +184,7 @@ class TextToSpeechEngine {
         this.synth = this.supported ? window.speechSynthesis : null;
         this.voices = [];
         this.isSpeaking = false;
-        this.activeEngine = 'piper'; // 'piper' or 'browser'
+        this.activeEngine = 'browser'; // 'browser' (instant default) or 'piper' (neural)
 
         if (this.supported) {
             this.loadBrowserVoices();
@@ -277,12 +277,20 @@ class TextToSpeechEngine {
                 // Show synthesizing status if callback provided
                 if (onModelProgress) onModelProgress({ status: 'synthesizing', progress: 0 });
 
-                const wavBlob = await this.piper.synthesize(speechString, {
-                    voiceId,
-                    onProgress: (percent) => {
-                        if (onModelProgress) onModelProgress({ status: 'downloading', progress: percent });
-                    }
-                });
+                // Safety timeout: if downloading or WASM takes > 10s, fail over cleanly to browser TTS
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("Piper synthesis timed out (model downloading in background).")), 10000)
+                );
+
+                const wavBlob = await Promise.race([
+                    this.piper.synthesize(speechString, {
+                        voiceId,
+                        onProgress: (percent) => {
+                            if (onModelProgress) onModelProgress({ status: 'downloading', progress: percent });
+                        }
+                    }),
+                    timeoutPromise
+                ]);
 
                 if (onModelProgress) onModelProgress({ status: 'playing', progress: 100 });
 

@@ -7,7 +7,7 @@
  */
 
 const DB_NAME = 'TausugTranslatorDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 // Default initial English <-> Tausug dictionary with phonetics
 const DEFAULT_DICTIONARY = [
@@ -128,6 +128,11 @@ class DatabaseManager {
                 // Settings Store
                 if (!db.objectStoreNames.contains('settings')) {
                     db.createObjectStore('settings', { keyPath: 'key' });
+                }
+
+                // AI Models Cache Store (Piper ONNX Models & Data)
+                if (!db.objectStoreNames.contains('models')) {
+                    db.createObjectStore('models', { keyPath: 'id' });
                 }
             };
 
@@ -302,6 +307,42 @@ class DatabaseManager {
             const req = store.clear();
             req.onsuccess = () => resolve(true);
             req.onerror = () => reject(req.error);
+        });
+    }
+
+    /**
+     * AI Neural Model Caching in IndexedDB (Persistent & Instant Offline Loading)
+     */
+    async saveModelBlob(id, buffer) {
+        return new Promise((resolve, reject) => {
+            try {
+                const tx = this.db.transaction('models', 'readwrite');
+                const store = tx.objectStore('models');
+                const req = store.put({ id, data: buffer, timestamp: Date.now() });
+                req.onsuccess = () => resolve(true);
+                req.onerror = () => reject(req.error);
+            } catch (err) {
+                console.warn("Failed to cache model in IndexedDB:", err);
+                resolve(false);
+            }
+        });
+    }
+
+    async getModelBlob(id) {
+        return new Promise((resolve) => {
+            try {
+                if (!this.db || !this.db.objectStoreNames.contains('models')) {
+                    return resolve(null);
+                }
+                const tx = this.db.transaction('models', 'readonly');
+                const store = tx.objectStore('models');
+                const req = store.get(id);
+                req.onsuccess = () => resolve(req.result ? req.result.data : null);
+                req.onerror = () => resolve(null);
+            } catch (err) {
+                console.warn("Could not query model cache:", err);
+                resolve(null);
+            }
         });
     }
 
