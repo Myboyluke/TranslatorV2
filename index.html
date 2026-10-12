@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English-Tausug Translator</title>
+    <title>Tausugo</title>
     <link rel="stylesheet" href="Styles_TTS.css">
 </head>
 <body>
     <div class="container">
-        <h1>English-Tausug Translator</h1>
-        <p>Enter text below, select the translation direction, and click "Translate" to convert using a word bank.</p>
+        <h1>TAUSUGO</h1>
+        <p>Website creators: Cyrus Ken A. Cerna, Al Khair M. Kunting, Mark Emmanuel C. Salian</p>
         
         <select id="direction">
             <option value="en-to-tausug">English to Tausug</option>
@@ -43,12 +43,12 @@
             "yesterday": "kahapun",
             "man": "usug",
             "woman": "babai",
-            "boy": "bata’ usug",
-            "girl": "bata’ babai",
+            "boy": "bata' usug",
+            "girl": "bata' babai",
             "brother": "taymanghud usug",
             "sister": "taymanghud babai",
-            "grandmother": "apu’",
-            "grandfather": "apu’",
+            "grandmother": "apu'",
+            "grandfather": "apu'",
             "husband": "bana",
             "wife": "asawa",
             "friend": "bagay",
@@ -58,13 +58,13 @@
             "book": "būk",
             "pen": "pluma",
             "table": "lamisahan",
-            "chair": "bangku’",
+            "chair": "bangku'",
             "door": "lawang",
             "window": "tandawan",
-            "clothes": "badju’",
-            "shoes": "tawmpa’",
+            "clothes": "badju",
+            "shoes": "tawmpa'",
             "money": "sīn",
-            "market": "tabu’",
+            "market": "tabu",
             "store": "tinda",
             "road": "dān",
             "sea": "dagat",
@@ -75,13 +75,13 @@
             "rain": "ulan",
             "wind": "hangin",
             "fire": "kāyu",
-            "earth": "lupa’",
+            "earth": "lupa'",
             "sky": "langit",
             "tree": "kahuy",
             "flower": "bulak",
             "bird": "manuk-manuk",
             "chicken": "manuk",
-            "horse": "kura’",
+            "horse": "kura'",
             "carabao": "karbaw",
             "eat": "kaun",
             "drink": "inum",
@@ -90,8 +90,8 @@
             "come": "kari",
             "go": "kadtu",
             "give": "dihil",
-            "take": "kawa’",
-            "see": "kita’",
+            "take": "kawa'",
+            "see": "kita'",
             "hear": "dungug",
             "speak": "bissara",
             "read": "bassa",
@@ -112,13 +112,43 @@
             "strong": "makusug",
             "fast": "marāgan",
             "slow": "malallay",
-            "new": "ba’gu",
+            "new": "ba'gu",
             "old": "maas",
-            "clean": "malanu’",
+            "clean": "malanu'",
             "dirty": "mahugaw",
             "easy": "masulut",
             "difficult": "maunit",
-            "the":"in"
+            "and":"iban",
+            "or":"atawa",
+            "but":"sagawa",
+            "because":"sabab",
+            "so":"hangkan",
+            "so then": "sakali",
+            "and then": "ampa",
+            "if": "bang",
+            "although": "minsan",
+            "while": "sasang",
+            "when": "mayan",
+            "until": "sampay",
+            "before": "bakas",
+            "after": "huwas",
+            "afterwards": "puas",
+            "also": "isab",
+            "school": "iskul",
+            "market": "tabu'",
+            "hospital": "huspital",
+            "restaurant": "kadday",
+            "store": "tinda",
+            "bank": "tumpung",
+            "church": "simbahan",
+            "mosque": "masjid",
+            "park": "lugal",
+            "port": "dunggu'",
+            "farm": "uma",
+            "garden": "jambangan",
+            "river": "sapa'",
+            "waterfall": "busay",
+            "island": "pū'"   
         };
 
         // Tausug to English word bank
@@ -132,11 +162,11 @@
             "kahapun": "yesterday",
             "usug": "man",
             "babai": "woman",
-            "bata’ usug": "boy",
-            "bata’ babai": "girl",
+            "bata' usug": "boy",
+            "bata' babai": "girl",
             "taymanghud usug": "brother",
             "taymanghud babai": "sister",
-            "apu’": "grandmother/grandfather",
+            "apu'": "grandmother/grandfather",
             "bana": "husband",
             "asawa": "wife",
             "bagay": "friend",
@@ -146,13 +176,13 @@
             "būk": "book",
             "pluma": "pen",
             "lamisahan": "table",
-            "bangku’": "chair",
+            "bangku'": "chair",
             "lawang": "door",
             "tandawan": "window",
-            "badju’": "clothes",
-            "tawmpa’": "shoes",
+            "badju'": "clothes",
+            "tawmpa": "shoes",
             "sīn": "money",
-            "tabu’": "market",
+            "tabu'": "market",
             "tinda": "store",
             "dān": "road",
             "dagat": "sea",
@@ -163,13 +193,13 @@
             "ulan": "rain",
             "hangin": "wind",
             "kāyu": "fire",
-            "lupa’": "earth",
+            "lupa'": "earth",
             "langit": "sky",
             "kahuy": "tree",
             "bulak": "flower",
             "manuk-manuk": "bird",
             "manuk": "chicken",
-            "kura’": "horse",
+            "kura'": "horse",
             "karbaw": "carabao",
             "kaun": "eat",
             "inum": "drink",
@@ -178,8 +208,8 @@
             "kari": "come",
             "kadtu": "go",
             "dihil": "give",
-            "kawa’": "take",
-            "kita’": "see",
+            "kawa'": "take",
+            "kita": "see",
             "dungug": "hear",
             "bissara": "speak",
             "bassa": "read",
@@ -200,14 +230,176 @@
             "makusug": "strong",
             "marāgan": "fast",
             "malallay": "slow",
-            "ba’gu": "new",
+            "ba'gu": "new",
             "maas": "old",
-            "malanu’": "clean",
+            "malanu'": "clean",
             "mahugaw": "dirty",
             "masulut": "easy",
             "maunit": "difficult",
-            "in":"the"
+            "iban": "and",
+            "atawa": "or",
+            "sagawa'": "but",
+            "sabab": "because",
+            "hangkan": "so",
+            "sakali": "so then",
+            "ampa": "and then",
+            "bang": "if",
+            "minsan": "although",
+            "sasang": "while",
+            "mayan": "when",
+            "sampay": "until",
+            "bakas": "before",
+            "huwas": "after",
+            "puas": "afterwards",
+            "isab": "also",
+            "iskul": "school",
+            "tabu'": "market",
+            "huspital": "hospital",
+            "kadday": "restaurant",
+            "tinda": "store",
+            "tumpung": "bank",
+            "simbahan": "church",
+            "masjid": "mosque",
+            "lugal": "park",
+            "dunggu'": "port",
+            "uma": "farm",
+            "jambangan": "garden",
+            "sapa'": "river",
+            "busay": "waterfall", 
+            "pū'": "island"
+         };
+
+        // =========================================================
+        // PHRASE BANKS
+        // =========================================================
+
+        const phraseBankEnToTausug = {
+            "where is the": "hawnu in",
+            "where am I": "hawnu na aku",
+            "Where is":"hawnu nahi",
+            "where are you":"hawnu nakam yan",
+            "where will it happen": "hawnu yattu mangyari",
+            "what is that":"unu yan",
+            "what is this": "unu ini",
+            "how are you": "biyariin da kaw",
+            "who are you": "hisiyu kaw",
+            "who is that": "hisiyu yan",
+            "what time": "isag pila",
+            "what time is it": "isag pila na",
+            "where is it": "hawnu yattu",
+            "where are you from": "Taga hawnu kaw",
+            "where are you going": "pakain kaw",
+            "why": "mayta",
+            "where is the bathroom": "Hawnu in kasilyas",
+            "how much is this": "pilasin ini",
+            "what is your name": "isiyu in ngan mu",
+            "can you help me": "tabangi ba aku",
+            "i dont understand": "di ku kahatihan",
+            "please repeat": "baliki kunuh",
+            "speak slowly please": "pagbissara kaw agak agak",
+            "youre welcome": "magsukul da isab",
+            "im sorry": "maafa aku",
+            "where is the hotel": "hawnu in hotel",
+            "where is the market": "hawnu in tabuh",
+            "how do i get there": "biyariin aku makakattu",
+            "is it far": "malayu ba",
+            "is it near": "masuuk ba",
+            "what should i do": "unu in hinangun ku",
+            "can i ask something": "manjari ba mangasubu",
+            "do you speak english": "nagbibissara ba kaw encglish",
+            "i need help": "tabang",
+            "i am lost": "na lawa na aku",
+            "where can i buy this": "hawnu ku ini mabih",
+            "what does this mean": "unu in panghati niya",
+            "what time does it open": "isag pila siya mag-ukab",
+            "Is there a discount": "awun ba diskawnt duun",
+            //ADITIONAL
+            "i will punch you": "bag bagun takaw",
+            
+
         };
+
+        const phraseBankTausugToEn = {
+            "magandang umaga": "good morning",
+            "hawnu in": "where is the",
+            "hawnu na aku": "Where am i",
+            "hawnu hi": "where is",
+            "hawnu nakaw yan": "where are you",
+            "hawnu yattu mangyari": "Where will it happen",
+            "unu yan": "what is that",
+            "unu ini": "what is this",
+            "Biyariin da kaw": "How are you",
+            "Hisiyu kaw": "Who are you",
+            "hisiyu yan": "who is that",
+            "mayta": "why",
+            "isag pila na": "what time is it?",
+            "isag pila": "What time",
+            "hawnu yattu": "Where is it?",
+            "pakain kaw": "where are you going",
+            "hawnu in kasilyas?": "where is the bathroom",
+            "pilasin ini": "how much is this",
+            "isyu in ngan mu": "Wht is your name",
+            "taga hawnu kaw": "where aree you from",
+            "tabangi ba aku": "can you help me",
+            "di ku kahatihan": "i dont understand",
+            "baliki kunuh": "please repeat",
+            "pagbissara kaw agak agak": "speak slowly please",
+            "magsukul": "thank you",
+            "magsukul da isab": "youre welcome",
+            "tabiyah": "excuse me",
+            "maafa aku": "im sorry",
+            "hawnu in hotel": "where is the hotel",
+            "hawnu in tabuh": "where is the market",
+            "biyariin aku makakattu": "how do i get there",
+            "malayu ba":"is it far",
+            "masuuk ba": "is it near",
+            "unu in hinangun ku": "what should i do",
+            "manjari ba mangasubu": "can i ask something",
+            "nagbibissara ka english": "do you speak english",
+            "nalawa na aku": "i am lost",
+            "hawnu ini mabih": "where can i buy this",
+            "unu un panghati niya": "what does this mean",
+            "isag pila siya mag-ukab": "what time does it open"
+        };
+
+        // Escape special characters before making a phrase regex.
+        function escapeRegex(text) {
+            return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Replace phrases first, then individual words.
+        // The longest phrases are checked first so a shorter entry
+        // cannot accidentally replace part of a longer phrase.
+        function translateWithPhrases(input, phraseBank, wordBank) {
+            let output = input;
+
+            const phraseEntries = Object.entries(phraseBank)
+                .sort((a, b) => b[0].length - a[0].length);
+
+            for (const [source, target] of phraseEntries) {
+                const escaped = escapeRegex(source);
+
+                output = output.replace(
+                    new RegExp('(^|\\s)' + escaped + '(?=\\s|[.!?,;:]|$)', 'gi'),
+                    '$1' + target
+                );
+            }
+
+            // Translate remaining individual words/entries.
+            const wordEntries = Object.entries(wordBank)
+                .sort((a, b) => b[0].length - a[0].length);
+
+            for (const [source, target] of wordEntries) {
+                const escaped = escapeRegex(source);
+
+                output = output.replace(
+                    new RegExp('(^|\\s)' + escaped + '(?=\\s|[.!?,;:]|$)', 'gi'),
+                    '$1' + target
+                );
+            }
+
+            return output;
+        }
 
         // Custom TTS pronunciation
         const tausugpronunciation = {
@@ -399,33 +591,29 @@
         }
 
         function translateText() {
-            const input = document.getElementById('inputText').value.toLowerCase().trim();
+            const input = document.getElementById('inputText').value.trim();
             const direction = document.getElementById('direction').value;
+
             const wordBank = direction === 'en-to-tausug'
                 ? wordBankEnToTausug
                 : wordBankTausugToEn;
 
-            // Match the longest phrases first.
-            const sortedEntries = Object.entries(wordBank)
-                .sort((a, b) => b[0].length - a[0].length);
+            const phraseBank = direction === 'en-to-tausug'
+                ? phraseBankEnToTausug
+                : phraseBankTausugToEn;
 
-            let output = input;
-
-            for (const [source, target] of sortedEntries) {
-                const escaped = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                output = output.replace(
-                    new RegExp('(^|\\s)' + escaped + '(?=\\s|$)', 'gi'),
-                    '$1' + target
-                );
-            }
+            // Phrases are checked first. If no phrase matches,
+            // the normal word bank is used for the remaining text.
+            const output = translateWithPhrases(
+                input,
+                phraseBank,
+                wordBank
+            );
 
             document.getElementById('output').innerHTML =
                 `<strong>Translated:</strong> ${output || '(no text entered)'}`;
 
-            //if (output) {
-            //    speakText(output, direction);
-            //}
-
+            // TTS remains manual: Translate does NOT automatically speak.
             document.getElementById('speakButton').disabled = !output;
         }
 
